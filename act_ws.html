@@ -98,25 +98,27 @@
         'Hiragino Sans GB',
         'Microsoft Yahei',
         'WenQuanYi Micro Hei',
-        'ST Heiti', sans-serif
+        'ST Heiti', sans-serif;
+        background-color: #111;
+        color: white;
     }
 
     ::-webkit-scrollbar {
         width: 5px;
         height: 5px;
-        background-color: #F5F5F5;
+        background-color: #222;
     }
 
     ::-webkit-scrollbar-track {
         -webkit-box-shadow: inset 0 0 6px rgb(93, 93, 93);
         border-radius: 10px;
-        background-color: #F5F5F5;
+        background-color: #222;
     }
 
     ::-webkit-scrollbar-thumb {
         border-radius: 10px;
         -webkit-box-shadow: inset 0 0 6px rgba(166, 166, 166, 0.3);
-        background-color: rgb(234, 234, 234);
+        background-color: #444;
     }
 
     .main-0 {
@@ -136,6 +138,59 @@
         max-width: 100%;
         margin-left: auto;
         margin-right: auto;
+        background-color: #222;
+        color: white;
+        padding: 20px;
+        border-radius: 10px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+    }
+    
+    /* Override el-table styles */
+    .el-table {
+        background-color: #222;
+        color: white;
+        border-radius: 5px;
+        overflow: hidden;
+    }
+
+    .el-table th, .el-table td {
+        color: white;
+        border-color: #444;
+    }
+
+    .el-table__header-wrapper {
+        background-color: #333;
+    }
+
+    .el-table__header th {
+        background-color: #333 !important;
+        color: white !important;
+    }
+
+    .el-table__body tr:hover {
+        background-color: #333;
+    }
+
+    .el-table__row {
+        background-color: #222 !important;
+    }
+
+    .el-table__row:nth-child(even) {
+        background-color: #333 !important;
+    }
+
+    .el-table__empty-block {
+        background-color: #222;
+        color: white;
+    }
+    
+    .el-table__row:hover td {
+        background-color: #444 !important;
+        color: #fff !important;
+    }
+
+    .el-table__row:hover .cell {
+        color: #fff !important;
     }
 </style>
 <body>
@@ -186,17 +241,33 @@
                         v-for="item in records" :key="item.name" :label="item.last_record_at?`${item.name} [${fmt_time(item.last_record_at-item.time)}]`:item.name" :name="item.name"
                 >
                     <el-table :data="Object.values(item.actors)" style="width: 100%" :default-sort="{ prop: 'dps', order: 'descending' }">
-                        <el-table-column prop="name" label="name">
+                        <el-table-column prop="name" label="Name">
                             <template #default="scope">
                                 <span>
                                     <el-icon :style="{'color':scope.row.color}"><Avatar/></el-icon> {{ scope.row.name }}
                                 </span>
                             </template>
                         </el-table-column>
-                        <el-table-column prop="damage" label="damage" sortable></el-table-column>
-                        <el-table-column prop="damage_in_minute" label="damage_in_minute" sortable></el-table-column>
-                        <el-table-column prop="dps" label="dps" sortable></el-table-column>
-                        <el-table-column prop="dps_in_minute" label="dps_in_minute" sortable></el-table-column>
+                        <el-table-column prop="damage" label="Damage" sortable>
+                            <template #default="{ row }">
+                                {{ row.damage.toLocaleString() }}
+                            </template>
+                        </el-table-column>
+                        <el-table-column prop="dps" label="DPS" sortable>
+                            <template #default="{ row }">
+                                {{ row.dps.toLocaleString() }} ({{ calculatePercentage(row.dps) }})
+                            </template>
+                        </el-table-column>
+                         <el-table-column prop="damage_in_minute" label="Recent Damage" sortable>
+                            <template #default="{ row }">
+                                {{ row.damage_in_minute.toLocaleString() }}
+                            </template>
+                        </el-table-column>
+                        <el-table-column prop="dps_in_minute" label="Recent DPS" sortable>
+                            <template #default="{ row }">
+                                {{ row.dps_in_minute.toLocaleString() }}
+                            </template>
+                        </el-table-column> 
                         <el-table-column label="detail">
                             <template #default="scope">
                                 <el-button @click="set_actor_dialog(scope.row)" type="text" size="small">detail</el-button>
@@ -226,27 +297,27 @@
         .filter(off => val & (1 << off));
 
     const actor_names = {
-        0x9498420d: "姬塔",
-        0x26a4848a: "古兰",
-        0xc3155079: "赛达",
-        0x34d4fd8f: "卡塔莉娜",
-        0xf8d73d33: "拉卡姆",
-        0x7b5934ad: "伊欧",
-        0x443d46bb: "欧根",
-        0xa9d6569e: "萝赛塔",
-        0x2b4aa114: "夏洛特",
-        0xbcc238de: "冈达葛萨",
-        0xfba6615d: "菲莉",
-        0x601aa977: "娜露梅",
-        0x63a7c3f0: "兰斯洛特",
-        0xf96a90c2: "巴恩",
-        0x28ac1108: "珀西瓦尔",
-        0x94e2514e: "齐格飞",
-        0x6fdd6932: "卡莉奥丝特罗",
-        0xc97f3365: "尤达哈拉",
-        0xd16cfbde: "巴萨拉卡",
-        0x8056abcd: "伊德",
-        0xf5755c0e: "伊德（龙人化）",
+        0x9498420d: "Djeeta",
+        0x26a4848a: "Gran",
+        0xc3155079: "Zeta",
+        0x34d4fd8f: "Katalina",
+        0xf8d73d33: "Rackam",
+        0x7b5934ad: "Io",
+        0x443d46bb: "Eugen",
+        0xa9d6569e: "Rosetta",
+        0x2b4aa114: "Charlotta",
+        0xbcc238de: "Ghandagoza",
+        0xfba6615d: "Ferry",
+        0x601aa977: "Narmaya",
+        0x63a7c3f0: "Lancelot",
+        0xf96a90c2: "Vane",
+        0x28ac1108: "Percival",
+        0x94e2514e: "Siegfried",
+        0x6fdd6932: "Cagliostro",
+        0xc97f3365: "Yodarha",
+        0xd16cfbde: "Vaseraga",
+        0x8056abcd: "Id",
+        0xf5755c0e: "Id (Dragon Transformation）",
     }
     var socket = null;
 
@@ -573,6 +644,18 @@
                     });
                 }
 
+                const calculatePercentage = (dps) => {
+                    // Calculate total DPS across all rows.
+                    const totalDPS = records.value.reduce((total, record) => {
+                        return total + Object.values(record.actors).reduce((acc, actor) => acc + actor.dps, 0);
+                    }, 0);
+                    
+                    // Calculate percentage.
+                    const percentage = totalDPS === 0 ? 0 : ((dps / totalDPS) * 100).toFixed(2);
+                    
+                    return `${percentage}%`;
+                };
+
                 Vue.onMounted(() => {
                     update_period = 1000;
                     create_socket();
@@ -593,6 +676,7 @@
                     remove_record,
                     actor_dialog,
                     set_actor_dialog,
+                    calculatePercentage,
                 }
             }
         })
