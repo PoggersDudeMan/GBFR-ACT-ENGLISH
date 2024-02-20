@@ -212,7 +212,7 @@
                     <el-tab-pane label="actions" name="Actions">
                         <el-table :data="actor_dialog.actor.actions" style="width: 100%" :default-sort="{ prop: 'damage', order: 'descending' }">
                             <el-table-column prop="name" label="Name"></el-table-column>
-                            <el-table-column prop="hit" label="Hit" sortable>
+                            <el-table-column prop="hit" label="Hits" sortable>
                                 <template #default="scope">
                                     <span>{{scope.row.hit.toLocaleString()}} ({{(scope.row.hit/actor_dialog.actor.hit*100).toFixed(1)}}%)</span>
                                 </template>
@@ -232,7 +232,7 @@
                                     {{ scope.row.max.toLocaleString() }}
                                 </template>
                             </el-table-column>
-                            <el-table-column label="Average" sortable>
+                            <el-table-column label="Average">
                                 <template #default="scope">
                                     <span v-if="scope.row.hit > 0">{{ (Math.floor(scope.row.damage / scope.row.hit)).toLocaleString() }}</span>
                                 </template>
