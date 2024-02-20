@@ -90,7 +90,6 @@
     [v-cloak] {
         display: none;
     }
-
     body {
         font-family: -apple-system,
         'Nimbus Roman No9 L',
@@ -98,45 +97,91 @@
         'Hiragino Sans GB',
         'Microsoft Yahei',
         'WenQuanYi Micro Hei',
-        'ST Heiti', sans-serif
+        'ST Heiti', sans-serif;
+        background-color: #101010;
+        color: white;
     }
-
     ::-webkit-scrollbar {
         width: 5px;
         height: 5px;
-        background-color: #F5F5F5;
+        background-color: #202020;
     }
-
     ::-webkit-scrollbar-track {
-        -webkit-box-shadow: inset 0 0 6px rgb(93, 93, 93);
         border-radius: 10px;
-        background-color: #F5F5F5;
+        background-color: #202020;
     }
-
     ::-webkit-scrollbar-thumb {
         border-radius: 10px;
-        -webkit-box-shadow: inset 0 0 6px rgba(166, 166, 166, 0.3);
-        background-color: rgb(234, 234, 234);
+        background-color: #404040;
     }
-
     .main-0 {
         display: table;
         position: absolute;
         height: 100%;
         width: 100%;
     }
-
     .main-1 {
         display: table-cell;
         vertical-align: middle;
+        background-color: #101010;
     }
-
     .main-2 {
         width: 1000px;
         max-width: 100%;
         margin-left: auto;
         margin-right: auto;
+        background-color: #202020;
+        color: white;
+        padding: 20px;
     }
+    
+    /* Override .el styles */
+    .el-table {
+        background-color: #202020;
+        color: white;
+        overflow: hidden;
+    }
+    .el-table th, .el-table td {
+        color: white;
+        border-color: #404040;
+    }
+    .el-table__header-wrapper {
+        background-color: #252525;
+    }
+    .el-table__header th {
+        background-color: #252525 !important;
+        color: white !important;
+    }
+    .el-table__body tr:hover {
+        background-color: #303030;
+    }
+    .el-table__row {
+        background-color: #202020 !important;
+    }
+    .el-table__row:nth-child(even) {
+        background-color: #252525 !important;
+    }
+    .el-table__empty-block {
+        background-color: #202020;
+        color: white;
+    }
+    
+    .el-table__row:hover td {
+        background-color: #303030 !important;
+    }
+    .el-dialog {
+        background-color: #202020;
+        color: white;
+    }
+
+    .el-tabs__item {
+        color: #aaaaaa;
+    }
+
+    .el-dialog__title {
+        color: white;
+    }
+
 </style>
 <body>
 <div id="app" class="main-0">
@@ -144,48 +189,58 @@
         <div class="main-2" v-if="0">
             resource is loading, please wait...
         </div>
-        <div class="main-2 shadow rounded p-3" v-cloak>
+        <div class="main-2 rounded p-3" v-cloak>
             <div v-if="!is_socket_connected" class="p-3">
                 <el-alert title="socket is not connect, check inject status" type="error" effect="dark" :closable="false"></el-alert>
             </div>
-
             <el-dialog v-model="actor_dialog.visible" :title="actor_dialog.actor?actor_dialog.actor.name:''" @close="set_actor_dialog()" width="800">
                 <el-tabs
                         v-model="actor_dialog.page"
                         type="card"
                         v-if="actor_dialog.actor"
                 >
-                    <el-tab-pane label="targets" name="targets">
+                    <el-tab-pane label="targets" name="Targets">
                         <el-table :data="actor_dialog.actor.targets" style="width: 100%" :default-sort="{ prop: 'damage', order: 'descending' }">
-                            <el-table-column prop="name" label="name"></el-table-column>
-                            <el-table-column prop="damage" label="damage" sortable></el-table-column>
+                            <el-table-column prop="name" label="Name"></el-table-column>
+                            <el-table-column prop="damage" label="Damage" sortable>
+                                <template #default="scope">
+                                    {{ scope.row.damage.toLocaleString() }}
+                                </template>
+                            </el-table-column>
                         </el-table>
                     </el-tab-pane>
-                    <el-tab-pane label="actions" name="actions">
+                    <el-tab-pane label="actions" name="Actions">
                         <el-table :data="actor_dialog.actor.actions" style="width: 100%" :default-sort="{ prop: 'damage', order: 'descending' }">
-                            <el-table-column prop="name" label="name"></el-table-column>
-                            <el-table-column prop="hit" label="hit" sortable>
+                            <el-table-column prop="name" label="Name"></el-table-column>
+                            <el-table-column prop="hit" label="Hit" sortable>
                                 <template #default="scope">
-                                    <span>{{scope.row.hit}} ({{(scope.row.hit/actor_dialog.actor.hit*100).toFixed(1)}}%)</span>
+                                    <span>{{scope.row.hit.toLocaleString()}} ({{(scope.row.hit/actor_dialog.actor.hit*100).toFixed(1)}}%)</span>
                                 </template>
                             </el-table-column>
-                            <el-table-column prop="damage" label="damage" sortable>
+                            <el-table-column prop="damage" label="Damage" sortable>
                                 <template #default="scope">
-                                    <span>{{scope.row.damage}} ({{scope.row.damage?(scope.row.damage/actor_dialog.actor.damage*100).toFixed(1):0}}%)</span>
+                                    <span>{{scope.row.damage.toLocaleString()}} ({{scope.row.damage?(scope.row.damage/actor_dialog.actor.damage*100).toFixed(1):0}}%)</span>
                                 </template>
                             </el-table-column>
-                            <el-table-column prop="min" label="min" sortable></el-table-column>
-                            <el-table-column prop="max" label="max" sortable></el-table-column>
-                            <el-table-column label="damage(avg)">
+                            <el-table-column prop="min" label="Min" sortable>
                                 <template #default="scope">
-                                    <span v-if="scope.row.hit > 0">{{Math.floor(scope.row.damage / scope.row.hit)}}</span>
+                                    {{ scope.row.min.toLocaleString() }}
+                                </template>
+                            </el-table-column>
+                            <el-table-column prop="max" label="Max" sortable>
+                                <template #default="scope">
+                                    {{ scope.row.max.toLocaleString() }}
+                                </template>
+                            </el-table-column>
+                            <el-table-column label="Average" sortable>
+                                <template #default="scope">
+                                    <span v-if="scope.row.hit > 0">{{ (Math.floor(scope.row.damage / scope.row.hit)).toLocaleString() }}</span>
                                 </template>
                             </el-table-column>
                         </el-table>
                     </el-tab-pane>
                 </el-tabs>
             </el-dialog>
-
             <el-tabs
                     v-model="view_record_value"
                     type="card"
@@ -195,20 +250,31 @@
                         v-for="item in records" :key="item.name" :label="item.last_record_at?`${item.name} [${fmt_time(item.last_record_at-item.time)}]`:item.name" :name="item.name"
                 >
                     <el-table :data="item.actors" style="width: 100%" :default-sort="{ prop: 'dps', order: 'descending' }">
-                        <el-table-column prop="name" label="name">
+                        <el-table-column prop="name" label="Name" sortable>
                             <template #default="scope">
                                 <span>
                                     <el-icon :style="{'color':scope.row.color}"><Avatar/></el-icon> {{ scope.row.name }}
                                 </span>
                             </template>
                         </el-table-column>
-                        <el-table-column prop="damage" label="damage" sortable></el-table-column>
-                        <el-table-column prop="damage_in_minute" label="damage_in_minute" sortable></el-table-column>
-                        <el-table-column prop="dps" label="dps" sortable></el-table-column>
-                        <el-table-column prop="dps_in_minute" label="dps_in_minute" sortable></el-table-column>
-                        <el-table-column label="detail">
+                        <el-table-column prop="damage" label="Damage" sortable>
+                            <template #default="{ row }">
+                                {{ row.damage.toLocaleString() }}
+                            </template>
+                        </el-table-column>
+                        <el-table-column prop="dps" label="DPS" sortable>
+                            <template #default="{ row }">
+                                {{ row.dps.toLocaleString() }}
+                            </template>
+                        </el-table-column>
+                        <el-table-column prop="damage_contribution" label="Contribution" sortable>
+                            <template #default="{ row }">
+                                {{ (row.damage_contribution * 100).toLocaleString(undefined, { maximumFractionDigits: 1 }) }}%
+                            </template>
+                        </el-table-column>
+                        <el-table-column label="Breakdown">
                             <template #default="scope">
-                                <el-button @click="set_actor_dialog(scope.row)" type="text" size="small">detail</el-button>
+                                <el-button @click="set_actor_dialog(scope.row)" type="text" size="small">Details</el-button>
                             </template>
                         </el-table-column>
                     </el-table>
@@ -232,32 +298,30 @@
     const err = _with_time(console.error);
     const flag_offs = (val) => Array.from(Array(val.toString(2).length).keys())
         .filter(off => val & (1 << off));
-
-    const actor_names = {
-        0x9498420d: "姬塔",
-        0x26a4848a: "古兰",
-        0xc3155079: "赛达",
-        0x34d4fd8f: "卡塔莉娜",
-        0xf8d73d33: "拉卡姆",
-        0x7b5934ad: "伊欧",
-        0x443d46bb: "欧根",
-        0xa9d6569e: "萝赛塔",
-        0x2b4aa114: "夏洛特",
-        0xbcc238de: "冈达葛萨",
-        0xfba6615d: "菲莉",
-        0x601aa977: "娜露梅",
-        0x63a7c3f0: "兰斯洛特",
-        0xf96a90c2: "巴恩",
-        0x28ac1108: "珀西瓦尔",
-        0x94e2514e: "齐格飞",
-        0x6fdd6932: "卡莉奥丝特罗",
-        0xc97f3365: "尤达哈拉",
-        0xd16cfbde: "巴萨拉卡",
-        0x8056abcd: "伊德",
-        0xf5755c0e: "伊德（龙人化）",
+        const actor_names = {
+        0x9498420d: "Djeeta",
+        0x26a4848a: "Gran",
+        0xc3155079: "Zeta",
+        0x34d4fd8f: "Katalina",
+        0xf8d73d33: "Rackam",
+        0x7b5934ad: "Io",
+        0x443d46bb: "Eugen",
+        0xa9d6569e: "Rosetta",
+        0x2b4aa114: "Charlotta",
+        0xbcc238de: "Ghandagoza",
+        0xfba6615d: "Ferry",
+        0x601aa977: "Narmaya",
+        0x63a7c3f0: "Lancelot",
+        0xf96a90c2: "Vane",
+        0x28ac1108: "Percival",
+        0x94e2514e: "Siegfried",
+        0x6fdd6932: "Cagliostro",
+        0xc97f3365: "Yodarha",
+        0xd16cfbde: "Vaseraga",
+        0x8056abcd: "Id",
+        0xf5755c0e: "Id (Dragon Transformation)",
     }
     var socket = null;
-
     function numberToHexStringWithZFill(number, minLength) {
         let hexString = number.toString(16);
         while (hexString.length < minLength) {
@@ -265,7 +329,6 @@
         }
         return hexString;
     }
-
     const colors = [
         '#55ff55',
         '#ff5555',
@@ -274,7 +337,6 @@
         '#ff55ff',
         '#55ffff',
     ]
-
     class DpsChart {
         constructor(canvas) {
             this.canvas = canvas;
@@ -312,7 +374,6 @@
             });
             this.period = 5 * 60;
         }
-
         set_key_color(key, color) {
             const dataset = this.datas.datasets.find(ds => ds.label === key);
             if (dataset) {
@@ -328,7 +389,6 @@
                 });
             }
         }
-
         append_frame(timestamp, datas) {
             if (this.period > 0) {
                 const min_time = timestamp - this.period;
@@ -354,14 +414,11 @@
             if (log_render) log('log_render', this.datas);
             this.chart.update();
         }
-
         static instances = {};
-
         static get_instance(name, canvas) {
             if (!this.instances[name]) this.instances[name] = new this(canvas);
             return this.instances[name];
         }
-
         static destroy_instance(name) {
             if (name in this.instances) {
                 this.instances[name].chart.destroy();
@@ -369,7 +426,6 @@
             }
         }
     }
-
     cdn_loader.then(() => {
         const App = Vue.createApp({
             setup() {
@@ -384,7 +440,6 @@
                 });
                 var want_new = false;
                 var update_period = 0;
-
                 const set_actor_dialog = (actor) => {
                     if (actor) {
                         actor_dialog.actor = actor;
@@ -394,7 +449,6 @@
                         actor_dialog.actor = null;
                     }
                 }
-
                 const remove_record = (name) => {
                     console.log('remove_record', name);
                     records.value = records.value.filter((item) => item.name !== name);
@@ -417,6 +471,7 @@
                         name: `${now.getHours()}:${now.getMinutes()}:${now.getSeconds()}`,
                         time: now.getTime(),
                         last_record_at: 0,
+                        total_damage: 0,
                         actors: [],
                         events_in_minute: [],
                         canvas: null,
@@ -425,7 +480,6 @@
                     view_record_value.value = records.value[records.value.length - 1].name;
                     want_new = false;
                 }
-
                 const get_latest_record = () => {
                     if (records.value.length === 0) new_record();
                     return records.value[records.value.length - 1];
@@ -439,18 +493,19 @@
                         current_record.actors[
                         current_record.actors.push({
                             source_idx,
-                            name: `[${party_idx}]${
+                            name: `[${party_idx}] ${
                                 actor_names[source_id] ||
                                 numberToHexStringWithZFill(
                                     source_id,
                                     8
                                 )
-                            }#${source_idx}`,
+                            } #${source_idx}`,
                             color: colors[party_idx], // assume no more than 6 actors
                             damage: 0,
                             damage_in_minute: 0,
                             dps: 0,
                             dps_in_minute: 0,
+                            damage_contribution: 0,
                             targets: [],
                             actions: [],
                             hit: 0
@@ -508,6 +563,11 @@
                     actor.hit += 1;
                     actor.damage += damage;
                     actor.damage_in_minute += damage;
+                    current_record.total_damage += damage;
+                    // Update damage_contribution for all actors.
+                    Object.values(current_record.actors).forEach(actor => {
+                        actor.damage_contribution = actor.damage / current_record.total_damage;
+                    });
                     const target_actor = get_actor_target(actor, target_idx, target_id);
                     target_actor.damage += damage;
                     const action = get_actor_action(actor, flags & (1 << 15) ? -3 : action_id);
@@ -516,7 +576,6 @@
                     if (action.min === -1 || action.min > damage) action.min = damage;
                     if (action.max === -1 || action.max < damage) action.max = damage;
                 }
-
                 const process_old_records = (current_record) => {
                     const min_time = new Date().getTime() - 60000;
                     while (current_record.events_in_minute.length > 0) {
@@ -533,9 +592,7 @@
                         }
                     }
                 }
-
                 let last_chart_evt = 0
-
                 const calc_damages = (current_record) => {
                     const full_time = (current_record.last_record_at - current_record.time) / 1000;
                     const real_time = (new Date().getTime() - current_record.time) / 1000
@@ -544,7 +601,7 @@
                         actor.dps = Math.floor(actor.damage / full_time);
                         actor.dps_in_minute = Math.floor(actor.damage_in_minute / full_time_in_minute);
                     }
-                    if (real_time > 10) {
+                    if (real_time > 0) {
                         current_record.show_chart = true;
                         if (current_record.canvas && last_chart_evt !== current_record.last_record_at) {
                             const chart = DpsChart.get_instance(current_record.name, current_record.canvas);
@@ -565,7 +622,6 @@
                         }
                     }
                 }
-
                 const update = () => {
                     const current_record = get_latest_record();
                     if (current_record.last_record_at > 0) {
@@ -574,7 +630,6 @@
                     }
                     if (update_period > 0) setTimeout(update, update_period);
                 }
-
                 const create_socket = () => {
                     const socket_ = new WebSocket("ws://localhost:24399");
                     socket_.addEventListener("message", evt_ => {
@@ -606,18 +661,15 @@
                         socket = null;
                     });
                 }
-
                 Vue.onMounted(() => {
                     update_period = 1000;
                     create_socket();
                     update();
                 });
-
                 Vue.onUnmounted(() => {
                     update_period = -1;
                     if (socket) socket.close();
                 });
-
                 return {
                     view_record_value,
                     drawer,
@@ -634,7 +686,5 @@
         for (const [key, component] of Object.entries(ElementPlusIconsVue)) App.component(key, component);
         App.mount('#app');
     }).catch(alert)
-
-
 </script>
 </html>
